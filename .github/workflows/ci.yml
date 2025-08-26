@@ -22,3 +22,21 @@ jobs:
           aws-region: ap-northeast-1
       - name: Sample command
         run: aws s3 ls
+      - uses: actions/create-github-app-token@v1
+        id: app-token
+        with:
+          private-key: ${{ secrets.PRIVATE_KEY }}
+          app-id: ${{ vars.APP_ID }}
+      - name: Send command to EC2 via SSM
+        run: |
+          aws ssm send-command \
+            --document-name "AWS-RunShellScript" \
+            --instance-ids ${{ secrets.INSTANCE_ID }} \
+            --comment "Clone repo using GitHub App token" \
+            --parameters 'commands=[
+              "export TOKEN=${{ steps.app-token.outputs.token }}",
+              "git config --global url.\"https://x-access-token:$TOKEN@github.com/\".insteadOf \"https://github.com/\"",
+              "git clone https://github.com/${GITHUB_REPOSITORY}.git /tmp/my-repo"
+            ]' \
+            --output text \
+            --region ap-northeast-1
