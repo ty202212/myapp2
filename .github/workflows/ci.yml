@@ -15,16 +15,20 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v3
+      
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v3
         with:
           role-to-assume: ${{ secrets.AWS_ROLE_ARN }}
           aws-region: ap-northeast-1
-      - uses: actions/create-github-app-token@v1
+      
+      - name: Create GitHub Apps Token
+        uses: actions/create-github-app-token@v1
         id: app-token
         with:
           private-key: ${{ secrets.PRIVATE_KEY }}
           app-id: ${{ vars.APP_ID }}
+      
       - name: Send command to EC2 via SSM
         run: |
           aws ssm send-command \
@@ -34,7 +38,7 @@ jobs:
             --parameters 'commands=[
               "export TOKEN=${{ steps.app-token.outputs.token }}",
               "git config --global url.\"https://x-access-token:$TOKEN@github.com/\".insteadOf \"https://github.com/\"",
-              "git clone https://github.com/ty202212/myapp2.git /tmp/my-repo"
+              "git pull https://github.com/ty202212/myapp2.git /tmp/my-repo"
             ]' \
             --output text \
             --region ap-northeast-1
