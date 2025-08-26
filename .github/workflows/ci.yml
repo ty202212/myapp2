@@ -36,7 +36,7 @@ jobs:
             --parameters 'commands=[
               "export TOKEN=${{ steps.app-token.outputs.token }}",
               "git config --global url.\"https://x-access-token:$TOKEN@github.com/\".insteadOf \"https://github.com/\"",
-              "git clone https://github.com/${GITHUB_REPOSITORY}.git /tmp/my-repo"
+              "git clone https://github.com/ty202212/myapp2.git /tmp/my-repo"
             ]' \
             --output text \
             --region ap-northeast-1
