@@ -3,7 +3,7 @@ name: sample
 on:
   push:
     branches:
-      - master
+      - main
 
 permissions:
   id-token: write
